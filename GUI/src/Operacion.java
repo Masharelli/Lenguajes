@@ -4,10 +4,11 @@ public class Operacion {
 	
 	private String operacion;
 	private final String[] operandos = {"+", "-", "*", "/"};
-	private final int[] numeros = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private int[] numeros;
 	
-	public Operacion() {
+	public Operacion(int[] numeros) {
 		//generate random operation
+		this.numeros = numeros;
 		this.operacion = "(" + operandos[new Random().nextInt(operandos.length)] + " " +
 		numeros[new Random().nextInt(numeros.length)] + " " + numeros[new Random().nextInt(numeros.length)] + ")";
 	}
@@ -48,10 +49,4 @@ public class Operacion {
 		}
 	}
 
-
-	public static void main (String[] args) {
-		Operacion holis = new Operacion();
-		System.out.println(holis.getOperacion());
-		System.out.println(holis.resolver());
-	}
 }
