@@ -1,3 +1,6 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -231,9 +234,43 @@ public class GUIFrame extends javax.swing.JFrame {
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
+        jButton1.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int numMin = Integer.parseInt(jTextField4.getText());
+				int numMax = (int) jSpinner3.getValue();
+				if (numMin <= numMax && numMin >= 0 && numMin <=9 && numMax <= 9 && numMax >= 0) {
+					Buffer buffer = new Buffer(Integer.parseInt(jTextField3.getText()));
+					for (int i = 1; i <= (int) jSpinner1.getValue(); i++) {
+						Producer producer = new Producer(buffer, Integer.parseInt(jTextField1.getText()), i, numMin, numMax);
+						producer.start();
+					}
+					for (int i = 0; i < (int) jSpinner2.getValue(); i++) {
+						Consumer consumer = new Consumer(buffer, Integer.parseInt(jTextField2.getText()), i);
+						consumer.start();
+					}
+					cleanFields();
+				} else {
+					System.out.println("Error en el rango de numeros");
+				}
+				
+			}
+		});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    public void cleanFields() {
+    	jTextField1.setText("");
+    	jTextField2.setText("");
+    	jTextField3.setText("");
+    	jTextField4.setText("");
+    	jSpinner1.setValue(0);
+    	jSpinner2.setValue(0);
+    	jSpinner3.setValue(0);
+    }
 
     /**
      * @param args the command line arguments

@@ -13,16 +13,17 @@ public class Buffer {
     }
     
     synchronized Operacion consume() {
-    	if (this.buffer.size() == 0) {
+    	if (this.buffer.isEmpty()) {
     		try {
-    			wait(1000);
+    			wait();
     		} catch (InterruptedException ex) {
     			Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
     		}
     	}
-    	Operacion product = this.buffer.get(0);
-    	this.buffer.remove(0);
-    	notify();
+    	Operacion product = this.buffer.get(0); //si mas de un consumidor entra a esta linea al mismo tiempo
+    	//con 1 solo producto en canasta, uno tendra una exepcion y el otro consumira correctamente
+    	this.buffer.remove(0); 
+    	notify(); //pendiente
     	return product;
     	/*
         char product = 0;
@@ -45,7 +46,7 @@ public class Buffer {
     synchronized void produce(Operacion operacion) {
         if(this.buffer.size() == this.maxSize) {
             try {
-                wait(1000);
+                wait();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
             }
