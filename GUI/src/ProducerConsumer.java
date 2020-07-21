@@ -5,10 +5,10 @@ public class ProducerConsumer {
         
         Buffer buffer = new Buffer(10);
         
-        Producer producer = new Producer(buffer, 1000);
+        Producer producer = new Producer(buffer, 1000, 1, 0, 0);
         producer.start();
         
-        Consumer consumer = new Consumer(buffer, 1000);
+        Consumer consumer = new Consumer(buffer, 1000, 1);
         consumer.start();
         
         //TODO: semaforos/banderas para que el productor se duerma cuando ya este lleno el bufer

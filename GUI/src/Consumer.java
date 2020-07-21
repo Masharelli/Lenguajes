@@ -5,19 +5,27 @@ import java.util.logging.Logger;
 public class Consumer extends Thread {
     Buffer buffer;
     int timer;
+    boolean stop;
+    int consumerID;
     
-    Consumer(Buffer buffer, int timer) {
+    Consumer(Buffer buffer, int timer, int id) {
         this.buffer = buffer;
         this.timer = timer;
+        this.stop = false;
+        this.consumerID = id;
+    }
+    
+    public void stopConsuming() {
+    	this.stop = true;
     }
     
     @Override
     public void run() {
         System.out.println("Running Consumer...");
-        while (true) {
+        while (!this.stop) {
         	Operacion operation = buffer.consume();
         	double resultado = operation.resolver();
-        	Buffer.print("Consumer consumed: " + operation.getOperacion() + " with result: " + resultado);
+        	Buffer.print("Consumer " + this.consumerID + " consumed: " + operation.getOperacion() + " with result: " + resultado);
         	try {
         		Thread.sleep(this.timer);
         	} catch(InterruptedException ex) {
