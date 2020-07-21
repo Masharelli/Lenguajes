@@ -64,7 +64,7 @@ public class GUIFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Consumidores");
 
-        jLabel3.setText("Tamaño del Buffer");
+        jLabel3.setText("Tamano del Buffer");
 
         jLabel4.setText("Cantidad");
 

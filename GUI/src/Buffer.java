@@ -1,18 +1,30 @@
-
-package producerconsumer;
-
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Buffer {
     
-    private char buffer;
+    private ArrayList<Operacion> buffer;
+    private int maxSize;
     
-    Buffer() {
-        this.buffer = 0;
+    Buffer(int maxSize) {
+        this.buffer = new ArrayList<Operacion>();
+        this.maxSize = maxSize;
     }
     
-    synchronized char consume() {
+    synchronized Operacion consume() {
+    	if (this.buffer.size() == 0) {
+    		try {
+    			wait(1000);
+    		} catch (InterruptedException ex) {
+    			Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
+    		}
+    	}
+    	Operacion product = this.buffer.get(0);
+    	this.buffer.remove(0);
+    	notify();
+    	return product;
+    	/*
         char product = 0;
         
         if(this.buffer == 0) {
@@ -27,22 +39,29 @@ public class Buffer {
         notify();
         
         return product;
+        */
     }
     
-    synchronized void produce(char product) {
-        if(this.buffer != 0) {
+    synchronized void produce(Operacion operacion) {
+        if(this.buffer.size() == this.maxSize) {
             try {
                 wait(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        this.buffer = product;
-        
+        this.buffer.add(operacion);
         notify();
     }
+
+	public ArrayList<Operacion> getBuffer() {
+		return buffer;
+	}
+
+
+
+	static int count = 1;
     
-    static int count = 1;
     synchronized static void print(String string) {
         System.out.print(count++ + " ");
         System.out.println(string);
