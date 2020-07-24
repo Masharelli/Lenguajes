@@ -40,6 +40,7 @@ public class GUIHandler {
 	
 	public void updateBar(int currentSize, int maxSize) {
 		this.bar.setValue(100 - (currentSize * 100 / maxSize));
+		System.out.println("valor de la barra " + (100 - (currentSize * 100 / maxSize)));
 	}
 	
 	public void consumeUpdate(String id, String operacion, String resultado, int bufferSize, int currentSize) {

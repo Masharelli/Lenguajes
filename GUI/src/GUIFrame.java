@@ -2,6 +2,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JProgressBar;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -61,6 +62,7 @@ public class GUIFrame extends javax.swing.JFrame {
         jProgressBar1 = new javax.swing.JProgressBar();
         jSpinner4 = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -73,7 +75,7 @@ public class GUIFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Consumidores");
 
-        jLabel3.setText("Tamano del Buffer");
+        jLabel3.setText("Tamaño del Buffer");
 
         jLabel4.setText("Cantidad");
 
@@ -152,17 +154,17 @@ public class GUIFrame extends javax.swing.JFrame {
                 
             },
             new String [] {
-                "IDProductor", "Operacion"
+                "IDProducer", "Operacion"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-            	
+                
             },
             new String [] {
-                "IDConsumidor", "Operacion", "Resultado"
+                "IDConsumer", "Operacion", "Resultado"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
@@ -214,6 +216,10 @@ public class GUIFrame extends javax.swing.JFrame {
         jButton1.setForeground(new java.awt.Color(0, 102, 51));
         jButton1.setText("INICIAR");
 
+        jButton2.setFont(new java.awt.Font("Courier New", 1, 24)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(0, 102, 51));
+        jButton2.setText("DETENER");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -221,9 +227,14 @@ public class GUIFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -231,38 +242,91 @@ public class GUIFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+        
         jButton1.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				int numMin = Integer.parseInt(jTextField4.getText());
-				int numMax = (int) jSpinner3.getValue();
-				if (numMin <= numMax && numMin >= 0 && numMin <=9 && numMax <= 9 && numMax >= 0) {
-					handler = new GUIHandler(jTable1, jTable2, jProgressBar1, jSpinner4);
-					workers = new ProducerConsumer(Integer.parseInt(jTextField3.getText()),
-							Integer.parseInt(jTextField4.getText()),
-							(int) jSpinner3.getValue(),
-							(int) jSpinner1.getValue(),
-							(int) jSpinner2.getValue(), 
-							Integer.parseInt(jTextField1.getText()), 
-							Integer.parseInt(jTextField2.getText()));
-					workers.setHandler(handler);
-					workers.initializeWork();
-					cleanFields();
-				} else {
-					System.out.println("Error en el rango de numeros");
+				boolean execute = true;
+				try {
+					int numMin = Integer.parseInt(jTextField4.getText());
+					int numMax = (int) jSpinner3.getValue();
+					int bufferSize = Integer.parseInt(jTextField3.getText());
+					int nProducers = (int) jSpinner1.getValue();
+					int nConsumers = (int) jSpinner2.getValue();
+					int sleepTimeProducer = Integer.parseInt(jTextField1.getText());
+					int sleepTimeConsumer = Integer.parseInt(jTextField2.getText());
+					
+					if (numMin > numMax || numMin < 0 || numMin > 9 || numMax > 9 || numMax < 0) {
+						execute = false;
+						System.out.println("Rango de numeros invalido [0-9]");
+					}
+					if (nConsumers < 1 || nConsumers > 10) {
+						execute  = false;
+						System.out.println("Rango de consumidores invalido [1-10]");
+					}
+					if (nProducers < 1 || nProducers > 10) {
+						execute = false;
+						System.out.println("Rango de productores invalido [1-10]");
+					}
+					if (sleepTimeProducer < 0 || sleepTimeProducer > 10000) {
+						execute = false;
+						System.out.println("Rango de tiempo de espera en productores invalido [0-10000]");
+					}
+					if (sleepTimeConsumer < 0 || sleepTimeConsumer > 10000) {
+						execute = false;
+						System.out.println("Rango de tiempo de espera en consumidores invalido [0-10000]");
+					}
+					if (bufferSize < 1 || bufferSize > 100) {
+						execute = false;
+						System.out.println("Rango del bufer invalido [1-100]");
+					}
+					if (execute) {
+						DefaultTableModel dm1 = (DefaultTableModel) jTable1.getModel();
+						DefaultTableModel dm2 = (DefaultTableModel) jTable2.getModel();
+						for (int i = dm1.getRowCount() - 1; i >= 0; i--) {
+							dm1.removeRow(i);
+						}
+						for (int i = dm2.getRowCount() - 1; i >= 0; i--) {
+							dm2.removeRow(i);
+						}
+						handler = new GUIHandler(jTable1, jTable2, jProgressBar1, jSpinner4);
+						workers = new ProducerConsumer(bufferSize,
+								numMin,
+								numMax,
+								nProducers,
+								nConsumers, 
+								sleepTimeProducer, 
+								sleepTimeConsumer);
+						workers.setHandler(handler);
+						workers.initializeWork();
+						cleanFields();
+					}
+				} catch (NumberFormatException ex) {
+					System.out.println("Formato incorrecto, inserte solamente numeros");
 				}
-				
 			}
 		});
         
+        jButton2.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (workers != null) {
+					workers.stopAllAction();
+					System.out.println("STOPPED ALL ACTIONS");
+				}
+			}
+		});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
     
     public void cleanFields() {
     	jTextField1.setText("");
@@ -272,10 +336,6 @@ public class GUIFrame extends javax.swing.JFrame {
     	jSpinner1.setValue(0);
     	jSpinner2.setValue(0);
     	jSpinner3.setValue(0);
-    }
-    
-    public void fillProgressBar(JProgressBar bar, Buffer buffer) {
-    	bar.setValue(buffer.getBuffer().size());
     }
 
     /**
@@ -315,6 +375,7 @@ public class GUIFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
