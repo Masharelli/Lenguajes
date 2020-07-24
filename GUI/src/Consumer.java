@@ -23,7 +23,7 @@ public class Consumer extends Thread {
     public void run() {
         System.out.println("Running Consumer...");
         while (!this.stop) {
-        	Operacion operation = buffer.consume();
+        	Operacion operation = buffer.consume(this.consumerID + "");
         	double resultado = operation.resolver();
         	Buffer.print("Consumer " + this.consumerID + " consumed: " + operation.getOperacion() + " with result: " + resultado);
         	try {

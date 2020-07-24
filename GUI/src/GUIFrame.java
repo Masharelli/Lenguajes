@@ -1,6 +1,8 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JProgressBar;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -16,6 +18,10 @@ public class GUIFrame extends javax.swing.JFrame {
     /**
      * Creates new form GUIFrame
      */
+	
+	private GUIHandler handler;
+	private ProducerConsumer workers;
+	
     public GUIFrame() {
         initComponents();
     }
@@ -143,26 +149,20 @@ public class GUIFrame extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "IDProductor", "Operacion"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+            	
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "IDConsumidor", "Operacion", "Resultado"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
@@ -242,15 +242,16 @@ public class GUIFrame extends javax.swing.JFrame {
 				int numMin = Integer.parseInt(jTextField4.getText());
 				int numMax = (int) jSpinner3.getValue();
 				if (numMin <= numMax && numMin >= 0 && numMin <=9 && numMax <= 9 && numMax >= 0) {
-					Buffer buffer = new Buffer(Integer.parseInt(jTextField3.getText()));
-					for (int i = 1; i <= (int) jSpinner1.getValue(); i++) {
-						Producer producer = new Producer(buffer, Integer.parseInt(jTextField1.getText()), i, numMin, numMax);
-						producer.start();
-					}
-					for (int i = 0; i < (int) jSpinner2.getValue(); i++) {
-						Consumer consumer = new Consumer(buffer, Integer.parseInt(jTextField2.getText()), i);
-						consumer.start();
-					}
+					handler = new GUIHandler(jTable1, jTable2, jProgressBar1, jSpinner4);
+					workers = new ProducerConsumer(Integer.parseInt(jTextField3.getText()),
+							Integer.parseInt(jTextField4.getText()),
+							(int) jSpinner3.getValue(),
+							(int) jSpinner1.getValue(),
+							(int) jSpinner2.getValue(), 
+							Integer.parseInt(jTextField1.getText()), 
+							Integer.parseInt(jTextField2.getText()));
+					workers.setHandler(handler);
+					workers.initializeWork();
 					cleanFields();
 				} else {
 					System.out.println("Error en el rango de numeros");
@@ -258,6 +259,7 @@ public class GUIFrame extends javax.swing.JFrame {
 				
 			}
 		});
+        
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -270,6 +272,10 @@ public class GUIFrame extends javax.swing.JFrame {
     	jSpinner1.setValue(0);
     	jSpinner2.setValue(0);
     	jSpinner3.setValue(0);
+    }
+    
+    public void fillProgressBar(JProgressBar bar, Buffer buffer) {
+    	bar.setValue(buffer.getBuffer().size());
     }
 
     /**

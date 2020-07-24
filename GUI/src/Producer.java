@@ -35,7 +35,7 @@ public class Producer extends Thread {
         
         while (!stop) {
         	Operacion product = new Operacion(numeros);
-            buffer.produce(product);
+            buffer.produce(product, this.producerID + "");
             System.out.println("Producer " + this.producerID + " produced: " + product.getOperacion() + ". Current products in stock: " + buffer.getBuffer().size());
             try {
             	Thread.sleep(timer);
