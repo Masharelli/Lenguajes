@@ -25,6 +25,6 @@ _Que cosas necesitas para instalar el software y como instalarlas_
 
 ## Contribuyendo 🖇️
 
-*Hugo Rocha A01633090
-*Daniel Rubio
+- Hugo Rocha A01633090
+- Daniel Rubio
 
