@@ -1,4 +1,4 @@
-# Proyecto lenguajes de Programacion
+# Proyecto lenguajes de Programacion(Productor Consumidor)
 
 Proyecto para la clase de Lenguajes de Programacion Tecnologico de Monterrey campus GDA
 
