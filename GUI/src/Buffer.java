@@ -6,14 +6,21 @@ public class Buffer {
     
     private ArrayList<Operacion> buffer;
     private int maxSize;
+    private GUIHandler handler;
     
-    Buffer(int maxSize) {
+    Buffer(int maxSize, GUIHandler handler) {
         this.buffer = new ArrayList<Operacion>();
         this.maxSize = maxSize;
+        this.handler = handler;
     }
     
+<<<<<<< HEAD
     synchronized Operacion consume() {
     	if (this.buffer.isEmpty()) {
+=======
+    synchronized Operacion consume(String id) {
+    	while (this.buffer.isEmpty()) {  //mejor while que if para que entren en orden
+>>>>>>> Dev_DanielR
     		try {
     			wait();
     		} catch (InterruptedException ex) {
@@ -22,8 +29,14 @@ public class Buffer {
     	}
     	Operacion product = this.buffer.get(0); //si mas de un consumidor entra a esta linea al mismo tiempo
     	//con 1 solo producto en canasta, uno tendra una exepcion y el otro consumira correctamente
+<<<<<<< HEAD
     	this.buffer.remove(0); 
     	notify(); //pendiente
+=======
+    	this.buffer.remove(0);
+    	this.handler.consumeUpdate(id, product.getOperacion(), product.resolver() + "", this.maxSize, this.buffer.size());
+    	notify(); //notificar al primer productor que se consumio un producto  (notifyAll)
+>>>>>>> Dev_DanielR
     	return product;
     	/*
         char product = 0;
@@ -43,8 +56,8 @@ public class Buffer {
         */
     }
     
-    synchronized void produce(Operacion operacion) {
-        if(this.buffer.size() == this.maxSize) {
+    synchronized void produce(Operacion operacion, String id) {
+        while (this.buffer.size() == this.maxSize) {  //tambien cambiar a while
             try {
                 wait();
             } catch (InterruptedException ex) {
@@ -52,11 +65,16 @@ public class Buffer {
             }
         }
         this.buffer.add(operacion);
-        notify();
+        this.handler.produceUpdate(id, operacion.getOperacion(), this.maxSize, this.buffer.size());
+        notifyAll();  //probar el notifyAll ya usando el while
     }
 
 	public ArrayList<Operacion> getBuffer() {
 		return buffer;
+	}
+	
+	public int getMaxSize() {
+		return this.maxSize;
 	}
 
 
